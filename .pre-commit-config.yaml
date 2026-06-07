@@ -1,0 +1,33 @@
+# Pre-commit hooks: fast, every-commit checks.
+# Install once with:  poetry run pre-commit install
+# Run on everything:  poetry run pre-commit run --all-files
+#
+# Hooks only see *staged* files, so these stay fast even on a big repo.
+
+default_language_version:
+  python: python3.11
+
+repos:
+  # --- General hygiene (tiny, instant) ---------------------------------
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace          # strip trailing spaces
+      - id: end-of-file-fixer            # ensure files end in a newline
+      - id: check-yaml                   # validate YAML syntax
+      - id: check-toml                   # validate pyproject.toml etc.
+      - id: check-added-large-files      # block accidental big blobs
+        args: [--maxkb=2000]
+      - id: check-merge-conflict         # catch leftover <<<<<<< markers
+      - id: check-case-conflict          # catch case-only filename clashes
+      - id: debug-statements             # block stray breakpoint()/pdb
+      - id: mixed-line-ending
+        args: [--fix=lf]
+
+  # --- Ruff: linter + formatter (Rust-fast, replaces flake8/isort/black)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.14.4
+    hooks:
+      - id: ruff                         # lint
+        args: [--fix]                    # auto-fix what it safely can
+      - id: ruff-format                  # format (black-compatible)

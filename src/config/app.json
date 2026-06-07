@@ -1,0 +1,64 @@
+{
+    "bindings": [
+        {
+            "gesture": "two_hand_pinch_squeeze",
+            "effects": [
+                {
+                    "name": "canny_edges",
+                    "params": {
+                        "render_outline": false,
+                        "threshold1": 92,
+                        "threshold2": 200
+                    }
+                }
+            ]
+        },
+        {
+            "gesture": "closed_fists",
+            "effects": [
+                {
+                    "name": "canny_edges",
+                    "params": {
+                        "render_outline": true,
+                        "threshold1": 50,
+                        "threshold2": 50
+                    }
+                },
+                {
+                    "name": "pixelate",
+                    "params": {
+                        "render_outline": true,
+                        "block_size": 30
+                    }
+                },
+                {
+                    "name": "thermal",
+                    "params": {
+                        "render_outline": true
+                    }
+                },
+                {
+                    "name": "sobel_edges",
+                    "params": {
+                        "render_outline": true,
+                        "kernel_size": 5
+                    }
+                }
+            ]
+        }
+    ],
+    "gesture_params": {
+        "two_hand_pinch_squeeze": {
+            "pinch_normalized_threshold": 0.04,
+            "squeeze_normalized_threshold": 0.04,
+            "hold_since": 0.08,
+            "grace_s": 0.25,
+            "smoothing_alpha": 0.5
+        },
+        "closed_fists": {
+            "hold_since": 0.08,
+            "grace_s": 0.25,
+            "smoothing_alpha": 0.5
+        }
+    }
+}

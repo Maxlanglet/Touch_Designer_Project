@@ -1,0 +1,45 @@
+[project]
+name = "hands"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Maxime Langlet"}
+]
+requires-python = ">=3.11, <3.15"
+dependencies = [
+    "opencv-python (>=4.13.0.92,<5.0.0.0)",
+    "mediapipe (>=0.10.35,<0.11.0)",
+    "loguru (>=0.7.3,<0.8.0)",
+    "pydantic (>=2.13.4,<3.0.0)",
+    "pyside6 (>=6.11.1,<7.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+src = ["src"]
+
+[tool.ruff.lint]
+# A pragmatic, fast rule set. Each selected group is cheap to run.
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes (undefined names, unused imports, etc.)
+    "I",    # isort (import sorting)
+    "UP",   # pyupgrade (modern syntax)
+    "B",    # flake8-bugbear (likely bugs)
+    "C4",   # flake8-comprehensions
+    "SIM",  # flake8-simplify
+    "RUF",  # ruff-specific rules
+]
+ignore = [
+    "E501",  # line length handled by the formatter
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["src"]
