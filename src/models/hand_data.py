@@ -63,6 +63,9 @@ class HandData:
             "hand_index": self.hand_index,
         }
 
+    def get_landmarks(self):
+        return self.hand_landmarks
+
     def get_finger_tips(self):
         finger_tips = []
         for idx in FINGER_TIPS:
@@ -71,3 +74,6 @@ class HandData:
 
     def get_pinch_fingertips(self):
         return [self.hand_landmarks[4], self.hand_landmarks[8]]
+
+    def get_palm_landmark(self):
+        return self.hand_landmarks[0]

@@ -11,6 +11,7 @@ class GestureType(Enum):
     TWO_HAND_PINCH_SQUEEZE = "two_hand_pinch_squeeze"
     THUMB_UP = "thumb_up"
     CLOSED_FISTS = "closed_fists"
+    PALM_TOUCHING = "palm_touching"
 
 
 @dataclass

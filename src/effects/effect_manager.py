@@ -6,6 +6,7 @@ from src.effects.effect import Effect
 from src.geometry.normalized_box import NormalizedBox
 from src.geometry.normalized_quad import NormalizedQuad
 from src.gestures.gesture_manager import DetectedGesture, GestureType
+from src.models.hand_data import HandData
 from src.renderer.renderer import Renderer
 
 
@@ -15,16 +16,18 @@ class EffectManager:
         self.assignements: dict[GestureType, list[Effect]] = {}
         self.active: dict[GestureType, NormalizedBox | NormalizedQuad] = {}
         self._lock = threading.Lock()
+        self.hands: list[HandData] | None = None
 
-    def handle(self, gestures):
+    def handle(self, gestures, hands: list[HandData] | None = None):
         with self._lock:
             self.active = {}
+            self.hands = hands or []
             for g in gestures:
                 if g.type not in self.bindings:
                     continue
                 regions = self._regions_of(g)
                 if not regions:
-                    continue
+                    regions = [None]
                 self.active[g.type] = regions
                 self._ensure_assignements(g.type, len(regions))
         return self.active
@@ -36,7 +39,7 @@ class EffectManager:
                 pairs = list(zip(regions, effects, strict=True))
                 pairs.sort(key=lambda p: getattr(p[0], "depth", 0.0), reverse=True)
                 for region, effect in pairs:
-                    frame = effect.apply(frame, region, renderer)
+                    frame = effect.apply(frame, region, renderer, hands=self.hands)
         return frame
 
     def snapshot(self) -> dict[GestureType, dict[str, tuple[type, any]]]:

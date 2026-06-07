@@ -126,13 +126,14 @@ class ControlPanel(QWidget):
                 w.setRange(0, 1000)
                 w.setValue(int(value))
                 w.valueChanged.connect(lambda v, e=effect, n=name: setattr(e, n, v))
+            elif typ is str:
+                w = QComboBox()
+                choices = list(getattr(type(effect), "_COLORS", {}).keys()) or [str(value)]
+                w.addItems(choices)
+                w.setCurrentText(str(value))
+                w.currentTextChanged.connect(lambda v, e=effect, n=name: setattr(e, n, v))
             else:
-                w = QDoubleSpinBox()
-                w.setRange(0.0, 1000.0)
-                w.setDecimals(3)
-                w.setSingleStep(0.001)
-                w.setValue(float(value))
-                w.valueChanged.connect(lambda v, e=effect, n=name: setattr(e, n, v))
+                continue  # skip unknown param types instead of crashing
             form.addRow(name, w)
         return form
 

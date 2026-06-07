@@ -5,6 +5,7 @@ import numpy as np
 
 from src.geometry.normalized_box import NormalizedBox
 from src.geometry.normalized_quad import NormalizedQuad
+from src.models.hand_data import HandData
 from src.renderer.renderer import Renderer
 
 
@@ -33,7 +34,11 @@ class Effect(ABC):
 
     @abstractmethod
     def apply(
-        self, frame: np.ndarray, region: NormalizedBox | NormalizedQuad, renderer: Renderer
+        self,
+        frame: np.ndarray,
+        region: NormalizedBox | NormalizedQuad,
+        renderer: Renderer,
+        hands: list[HandData] | None = None,
     ) -> np.ndarray:
         """Applies the effect to the frame"""
 

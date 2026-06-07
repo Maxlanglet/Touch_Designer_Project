@@ -5,6 +5,7 @@ from src.effects.effect import Effect
 from src.effects.registry import register_effect
 from src.geometry.normalized_box import NormalizedBox
 from src.geometry.normalized_quad import NormalizedQuad
+from src.models.hand_data import HandData
 from src.renderer.colors import GREEN
 from src.renderer.renderer import Renderer
 
@@ -16,7 +17,11 @@ class Pixelate(Effect):
         self.block_size = block_size
 
     def apply(
-        self, frame: np.ndarray, region: NormalizedBox | NormalizedQuad, renderer: Renderer
+        self,
+        frame: np.ndarray,
+        region: NormalizedBox | NormalizedQuad,
+        renderer: Renderer,
+        hands: list[HandData] | None = None,
     ) -> np.ndarray:
         frame = self.pixelate(frame, region, renderer, block_size=self.block_size)
         return frame

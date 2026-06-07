@@ -24,7 +24,7 @@ class FramePipeline:
             gestures = []
         else:
             gestures = result.gestures
-            self.effect_manager.handle(gestures)
+            self.effect_manager.handle(gestures, result.hands)
 
         self.renderer.reset()
         for hand in result.hands:
