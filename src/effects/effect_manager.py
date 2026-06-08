@@ -2,7 +2,7 @@ import threading
 
 import numpy as np
 
-from src.effects.effect import Effect
+from src.effects.effect import Effect, RenderTarget
 from src.geometry.normalized_box import NormalizedBox
 from src.geometry.normalized_quad import NormalizedQuad
 from src.gestures.gesture_manager import DetectedGesture, GestureType
@@ -25,21 +25,21 @@ class EffectManager:
             for g in gestures:
                 if g.type not in self.bindings:
                     continue
-                regions = self._regions_of(g)
-                if not regions:
-                    regions = [None]
-                self.active[g.type] = regions
-                self._ensure_assignements(g.type, len(regions))
+                targets = self._targets_of(g)
+                if not targets:
+                    targets = [None]
+                self.active[g.type] = targets
+                self._ensure_assignements(g.type, len(targets))
         return self.active
 
     def render(self, frame: np.ndarray, renderer: Renderer) -> np.ndarray:
         with self._lock:
-            for gtype, regions in self.active.items():
+            for gtype, targets in self.active.items():
                 effects = self.assignements.get(gtype, [])
-                pairs = list(zip(regions, effects, strict=True))
+                pairs = list(zip(targets, effects, strict=True))
                 pairs.sort(key=lambda p: getattr(p[0], "depth", 0.0), reverse=True)
-                for region, effect in pairs:
-                    frame = effect.apply(frame, region, renderer, hands=self.hands)
+                for target, effect in pairs:
+                    frame = effect.apply(frame, target, renderer, hands=self.hands)
         return frame
 
     def snapshot(self) -> dict[GestureType, dict[str, tuple[type, any]]]:
@@ -71,6 +71,15 @@ class EffectManager:
         if g.regions:
             return g.regions
         return [g.region] if g.region is not None else []
+
+    def _targets_of(self, g: DetectedGesture) -> list[RenderTarget]:
+        if g.regions:
+            return [RenderTarget(region=region) for region in g.regions]
+        if g.region:
+            return [RenderTarget(region=g.region)]
+        if g.points:
+            return [RenderTarget(point=point) for point in g.points]
+        return []
 
     def _ensure_assignements(self, gtype: GestureType, n: int):
         pool = self.bindings.get(gtype, [])

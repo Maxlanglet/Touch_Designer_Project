@@ -2,10 +2,8 @@ import cv2
 import numpy as np
 from loguru import logger
 
-from src.effects.effect import Effect
+from src.effects.effect import Effect, RenderTarget
 from src.effects.registry import register_effect
-from src.geometry.normalized_box import NormalizedBox
-from src.geometry.normalized_quad import NormalizedQuad
 from src.models.hand_data import HandData
 from src.renderer.colors import GREEN
 from src.renderer.renderer import Renderer
@@ -23,16 +21,18 @@ class SobelEdges(Effect):
     def apply(
         self,
         frame: np.ndarray,
-        region: NormalizedBox | NormalizedQuad,
+        target: RenderTarget,
         renderer: Renderer,
         hands: list[HandData] | None = None,
     ) -> np.ndarray:
-        frame = self.edges(frame, region, renderer)
+        frame = self.edges(frame, target, renderer)
         return frame
 
-    def edges(
-        self, frame: np.ndarray, region: NormalizedBox | NormalizedQuad, renderer: Renderer
-    ) -> np.ndarray:
+    def edges(self, frame: np.ndarray, target: RenderTarget, renderer: Renderer) -> np.ndarray:
+        region = self.get_region(target)
+        if region is None:
+            return frame
+
         roi, x1, y1, x2, y2, pts = self.get_roi(frame, region)
         if roi is None:
             return frame

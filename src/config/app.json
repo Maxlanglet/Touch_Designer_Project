@@ -50,13 +50,33 @@
             "gesture": "palm_touching",
             "effects": [
                 {
-                    "name": "web",
+                    "name": "mosaic",
                     "params": {
-                        "render_outline": true,
+                        "render_outline": false,
                         "connect_across": true,
+                        "connect_between": false,
                         "thickness": 1,
                         "color": "WHITE",
-                        "count": 5
+                        "count": 5,
+                        "allowed_effects": [
+                            "canny_edges",
+                            "pixelate",
+                            "thermal",
+                            "sobel_edges"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "gesture": "pinching",
+            "effects": [
+                {
+                    "name": "draw",
+                    "params": {
+                        "color": "BLUE",
+                        "thickness": 7,
+                        "max_points": 64
                     }
                 }
             ]
@@ -80,6 +100,12 @@
             "grace_s": 0.25,
             "smoothing_alpha": 0.5,
             "palm_touching_threshold": 0.03
+        },
+        "pinching": {
+            "trigger_hold_since": 0.4,
+            "hold_since": 0.06,
+            "smoothing_alpha": 0.5,
+            "pinch_normalized_threshold": 0.03
         }
     }
 }

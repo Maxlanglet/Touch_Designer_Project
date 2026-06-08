@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 import cv2
 import mediapipe as mp
+from loguru import logger
 
 from src.gestures.gesture_manager import DetectedGesture, GestureManager
 from src.gestures.gesture_state_tracker import GestureEvent, GestureStateTracker
@@ -94,4 +95,7 @@ class Detector:
         return mp_image
 
     def close(self):
-        self.recognizer.close()
+        try:
+            self.recognizer.close()
+        except Exception as e:
+            logger.error(f"Error closing recognizer: {e}")

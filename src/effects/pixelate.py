@@ -1,10 +1,8 @@
 import cv2
 import numpy as np
 
-from src.effects.effect import Effect
+from src.effects.effect import Effect, RenderTarget
 from src.effects.registry import register_effect
-from src.geometry.normalized_box import NormalizedBox
-from src.geometry.normalized_quad import NormalizedQuad
 from src.models.hand_data import HandData
 from src.renderer.colors import GREEN
 from src.renderer.renderer import Renderer
@@ -19,20 +17,24 @@ class Pixelate(Effect):
     def apply(
         self,
         frame: np.ndarray,
-        region: NormalizedBox | NormalizedQuad,
+        target: RenderTarget,
         renderer: Renderer,
         hands: list[HandData] | None = None,
     ) -> np.ndarray:
-        frame = self.pixelate(frame, region, renderer, block_size=self.block_size)
+        frame = self.pixelate(frame, target, renderer, block_size=self.block_size)
         return frame
 
     def pixelate(
         self,
         frame: np.ndarray,
-        region: NormalizedBox | NormalizedQuad,
+        target: RenderTarget,
         renderer: Renderer,
         block_size: int = 10,
     ) -> np.ndarray:
+        region = self.get_region(target)
+        if region is None:
+            return frame
+
         roi, x1, y1, x2, y2, pts = self.get_roi(frame, region)
         if roi is None:
             return frame

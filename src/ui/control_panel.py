@@ -15,11 +15,12 @@ from PySide6.QtWidgets import (
 )
 
 from src.config.config import save_config
-from src.effects.effect import param_specs
+from src.effects.effect import TargetKind, param_specs
 from src.effects.effect_manager import EffectManager
 from src.effects.registry import EFFECT_REGISTRY
 from src.gestures.gesture_manager import GestureManager, GestureType
 from src.gestures.registry import GESTURE_REGISTRY
+from src.renderer.colors import _COLORS
 
 CONFIG_PATH = "src/config/app.json"
 
@@ -89,7 +90,7 @@ class ControlPanel(QWidget):
         v.setContentsMargins(0, 0, 0, 0)
         header = QHBoxLayout()
         combo = QComboBox()
-        combo.addItems(list(EFFECT_REGISTRY.keys()))
+        combo.addItems(self.allowed_effects(self.detectors_by_name[gesture_name]))
         combo.setCurrentText(effect.name)
         combo.currentTextChanged.connect(
             lambda new, g=gesture_name, i=index: self._change_effect(g, i, new)
@@ -113,6 +114,14 @@ class ControlPanel(QWidget):
         v.addLayout(self._param_form(effect))
         return row
 
+    def allowed_effects(self, gesture_cls) -> list[str]:
+        kind = getattr(gesture_cls, "emits", TargetKind.REGION)
+        return [
+            name
+            for name, e in EFFECT_REGISTRY.items()
+            if kind in getattr(e, "target_kinds", {TargetKind.REGION})
+        ]
+
     def _param_form(self, effect):
         form = QFormLayout()
         for name, typ, default in param_specs(type(effect)):
@@ -128,7 +137,7 @@ class ControlPanel(QWidget):
                 w.valueChanged.connect(lambda v, e=effect, n=name: setattr(e, n, v))
             elif typ is str:
                 w = QComboBox()
-                choices = list(getattr(type(effect), "_COLORS", {}).keys()) or [str(value)]
+                choices = list(_COLORS.keys()) or [str(value)]
                 w.addItems(choices)
                 w.setCurrentText(str(value))
                 w.currentTextChanged.connect(lambda v, e=effect, n=name: setattr(e, n, v))

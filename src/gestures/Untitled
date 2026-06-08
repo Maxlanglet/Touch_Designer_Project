@@ -1,0 +1,31 @@
+from src.gestures.gesture_manager import DetectedGesture, GestureDetector
+from src.models.hand_data import HandData
+
+from .registry import register_gesture
+
+
+@register_gesture("palms_touching")
+class PalmsTouchingDetector(GestureDetector):
+    def __init__(self, hold_since: float = 0.12, grace_s: float = 0.25, smoothing_alpha: float = 0.5):
+        self.active = False
+        self.was_triggering = False
+        self.hold_since = hold_since
+        self.grace_s = grace_s
+        self.smoothing_alpha = smoothing_alpha
+        self._debounce = Debouncer(hold_since)
+        self._smoother = PointSmoother(smoothing_alpha)
+        self.last_regions = None
+        self.last_hands = []
+        self.last_seen = 0.0
+        self.metrics = {}
+
+    def reset(self):
+        self.active = False
+        self.was_triggering = False
+        self.last_regions = None
+
+    def detect(self, hands: list[HandData]) -> DetectedGesture:
+        now = time.monotonic()
+
+
+        return None

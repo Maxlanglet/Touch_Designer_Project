@@ -1,10 +1,8 @@
 import cv2
 import numpy as np
 
-from src.effects.effect import Effect
+from src.effects.effect import Effect, RenderTarget
 from src.effects.registry import register_effect
-from src.geometry.normalized_box import NormalizedBox
-from src.geometry.normalized_quad import NormalizedQuad
 from src.renderer.colors import GREEN
 from src.renderer.renderer import Renderer
 
@@ -14,15 +12,15 @@ class BlurEffect(Effect):
     def __init__(self, render_outline: bool = False):
         super().__init__("blur", render_outline)
 
-    def apply(
-        self, frame: np.ndarray, region: NormalizedBox | NormalizedQuad, renderer: Renderer
-    ) -> np.ndarray:
-        frame = self.box_blur(frame, region, renderer)
+    def apply(self, frame: np.ndarray, target: RenderTarget, renderer: Renderer) -> np.ndarray:
+        frame = self.box_blur(frame, target, renderer)
         return frame
 
-    def box_blur(
-        self, frame: np.ndarray, region: NormalizedBox | NormalizedQuad, renderer: Renderer
-    ) -> np.ndarray:
+    def box_blur(self, frame: np.ndarray, target: RenderTarget, renderer: Renderer) -> np.ndarray:
+        region = self.get_region(target)
+        if region is None:
+            return frame
+
         roi, x1, y1, x2, y2, pts = self.get_roi(frame, region)
         if roi is None:
             return frame

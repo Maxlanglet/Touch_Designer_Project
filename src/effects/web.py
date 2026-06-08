@@ -2,10 +2,8 @@ import random
 
 import numpy as np
 
-from src.effects.effect import Effect
+from src.effects.effect import Effect, RenderTarget
 from src.effects.registry import register_effect
-from src.geometry.normalized_box import NormalizedBox
-from src.geometry.normalized_quad import NormalizedQuad
 from src.models.hand_data import HandData
 from src.renderer.colors import BLUE, GREEN, RED, WHITE
 from src.renderer.renderer import Renderer
@@ -19,12 +17,14 @@ class Web(Effect):
         self,
         render_outline: bool = False,
         connect_across: bool = False,
+        connect_between: bool = False,
         thickness: int = 1,
         color: str = "WHITE",
         count: int = 5,
     ):
         super().__init__("web", render_outline)
         self.connect_across = connect_across
+        self.connect_between = connect_between
         self.thickness = thickness
         self.color = color
         self.count = count
@@ -33,12 +33,12 @@ class Web(Effect):
         self.assigned_landmarks = self._assigned_landmarks()
 
     def _resolve_color(self, color: str) -> tuple[int, int, int]:
-        return self._COLORS.get(color, WHITE)
+        return _COLORS.get(color, WHITE)
 
     def apply(
         self,
         frame: np.ndarray,
-        region: NormalizedBox | NormalizedQuad,
+        target: RenderTarget,
         renderer: Renderer,
         hands: list[HandData] | None = None,
     ) -> np.ndarray:
@@ -48,13 +48,14 @@ class Web(Effect):
             return frame
         self._ensure_assigned()
 
-        for hand in hands:
-            landmarks = hand.get_landmarks()
-            for i in range(len(landmarks)):
-                for j in range(i + 1, len(landmarks)):
-                    frame = renderer.line(
-                        frame, landmarks[i], landmarks[j], color, thickness=self.thickness
-                    )
+        if self.connect_between:
+            for hand in hands:
+                landmarks = hand.get_landmarks()
+                for i in range(len(landmarks)):
+                    for j in range(i + 1, len(landmarks)):
+                        frame = renderer.line(
+                            frame, landmarks[i], landmarks[j], color, thickness=self.thickness
+                        )
 
         if self.connect_across and len(hands) >= 2:
             a, b = sorted(hands, key=lambda h: h.hand_index)[:2]

@@ -5,6 +5,7 @@ from enum import Enum
 from src.geometry.normalized_box import NormalizedBox
 from src.geometry.normalized_quad import NormalizedQuad
 from src.models.hand_data import HandData
+from src.models.sim_normalized_landmarks import SimNormalizedLandmark
 
 
 class GestureType(Enum):
@@ -12,6 +13,7 @@ class GestureType(Enum):
     THUMB_UP = "thumb_up"
     CLOSED_FISTS = "closed_fists"
     PALM_TOUCHING = "palm_touching"
+    PINCHING = "pinching"
 
 
 @dataclass
@@ -20,6 +22,7 @@ class DetectedGesture:
     hands: list[int]  # which hands are involved in the gesture
     confidence: float = 1.0
     region: NormalizedBox | NormalizedQuad | None = None
+    points: list[SimNormalizedLandmark] | None = None
     regions: list[NormalizedQuad | NormalizedBox] = field(default_factory=list)
     metrics: dict = field(
         default_factory=dict
